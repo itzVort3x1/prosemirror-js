@@ -45,14 +45,14 @@ const DinoPage = () => {
     let dinoType = dinoSchema.nodes.dino
 
     function insertDino(type) {
-    return function(state, dispatch) {
-        let {$from} = state.selection, index = $from.index()
-        if (!$from.parent.canReplaceWith(index, index, dinoType))
-        return false
-        if (dispatch)
-        dispatch(state.tr.replaceSelectionWith(dinoType.create({type})))
-        return true
-    }
+        return function(state, dispatch) {
+            let {$from} = state.selection, index = $from.index()
+            if (!$from.parent.canReplaceWith(index, index, dinoType))
+            return false
+            if (dispatch)
+            dispatch(state.tr.replaceSelectionWith(dinoType.create({type})))
+            return true
+        }
     }
     let menu = buildMenuItems(dinoSchema)
     // Add a dino-inserting item for each type of dino
