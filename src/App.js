@@ -12,13 +12,8 @@ import DinoPage from './components/Dino';
 
 function App(){
   let state;
+  let view;
   useEffect(() => {
-    if(!localStorage.getItem("editor")){
-
-    }else{
-
-    }
-    console.log(schema)
     let existingData = localStorage.getItem("editor");
     console.log(existingData);
     const nodeSpec = {
@@ -44,29 +39,35 @@ function App(){
       // }]
   }
     const mySchema = new Schema({
-      nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block", nodeSpec),
+      nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
       marks: schema.spec.marks
     })
     // let state = EditorState.create({schema: mySchema})
 // var [editorState, setEditorState] = useProsemirror({doc, ...and a bunch of other props that you can glean from the PM examples})
+
+    let state = EditorState.create({ 
+      doc: DOMParser.fromSchema(mySchema).parse(document.querySelector("#content")),
+      plugins: exampleSetup({schema: mySchema}),
+      schema: mySchema
+    })
+
+    console.log(state.doc.from)
     
-    let view = new EditorView(document.querySelector("#editor"), {
-      state: EditorState.create({
-        doc: DOMParser.fromSchema(mySchema).parse(document.querySelector("#content")),
-        plugins: exampleSetup({schema: mySchema})
-      }),
+    view = new EditorView(document.querySelector("#editor"), {
+      state: state,
       dispatchTransaction(transaction) {
-        
+        let newState;
         state = transaction.doc.content.toJSON();
-        // console.log(state.doc.toString());
+        console.log(state);
         localStorage.setItem("editor", JSON.stringify(state));
         // console.log("Document size went from", transaction.before.content.size,"to", transaction.doc.content.size)
-        let newState = view.state.apply(transaction)
-        // console.log(newState)
+          // transaction.doc.content = JSON.parse(existingData)
+        newState = view.state.apply(transaction)
         view.updateState(newState)
+        // console.log(newState)
       },
     });
-
+    
     
     // ProseMirror-menubar-wrapper
   }, []);
